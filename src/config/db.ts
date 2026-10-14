@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { Pool } from "pg";
 
 export const connectDB = async () => {
   try {
@@ -10,18 +9,3 @@ export const connectDB = async () => {
     process.exit(1);
   }
 };
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-  connectionTimeoutMillis: 10000,
-  max: 5,
-});
-
-pool.on("error", (error) => {
-  console.error("Unexpected PostgreSQL error:", error.message);
-});
-
-export default pool;
