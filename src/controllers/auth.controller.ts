@@ -4,7 +4,6 @@ import crypto from "crypto";
 import { User } from "../models/user.model";
 import { signToken } from "../utils/jwt";
 import { sendResetCodeEmail, sendWelcomeEmail }  from "../services/emailService";
-import { sendBrevoMail } from "./emailcontroller";
 
 
 const hashCode = (code: string) => crypto.createHash("sha256").update(code).digest("hex");
@@ -48,7 +47,6 @@ export const login = async (req: Request, res: Response) => {
     return res.status(401).json({ message: "Invalid email or password" });
   }
 
-  await sendWelcomeMessage(email, user.name);
   res.json({
     token: signToken({ id: user.id }),
     user: { id: user.id, name: user.name, email: user.email, role: user.role },
@@ -113,11 +111,4 @@ export const resetPassword = async (req: Request, res: Response) => {
   await user.save();
 
   res.json({ message: "Password reset successful, you can now log in" });
-};
-
-
-
-
-export const sendWelcomeMessage = async (email: string, name: string) => {
-  await sendBrevoMail(email, "Welcome to Our Service", `<h1>Welcome, ${name}!</h1><p>Thank you for registering.</p>`);
 };
