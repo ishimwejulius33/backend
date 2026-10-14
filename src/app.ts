@@ -1,10 +1,14 @@
 import express, { Request, Response, NextFunction } from "express";
+import cors from "cors";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
 import prod from "./routes/product.route"
 
 const app = express();
+const allowedOrigins = ["http://localhost:5173", process.env.FRONTEND_URL]
+  .filter((origin): origin is string => Boolean(origin));
 
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.get("/", (_req: Request, res: Response) => {
