@@ -1,15 +1,22 @@
-import express from "express";
-import { getAllProducts } from "../controllers/productcontrollers";
-import { createProduct } from "../controllers/productcontrollers";
-import { updateProduct } from "../controllers/productcontrollers";
-import { deleteProduct } from "../controllers/productcontrollers";
-const router = express.Router();
 
+import { Router } from "express";
+import {
+  getAllProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "../controllers/productcontrollers";
+import { authenticate } from "../middlewares/authenticate";
+import { authorize } from "../middlewares/authorize";
 
+const router = Router();
+
+// Everyone can view products
 router.get("/", getAllProducts);
-router.post("/", createProduct);
-router.put("/:id", updateProduct);
-router.delete("/:id", deleteProduct);
 
+// Only logged-in admins can manage products
+router.post("/", authenticate, authorize("admin"), createProduct);
+router.put("/:id", authenticate, authorize("admin"), updateProduct);
+router.delete("/:id", authenticate, authorize("admin"), deleteProduct);
 
 export default router;
