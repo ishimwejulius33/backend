@@ -62,9 +62,9 @@ export const sendWelcomeEmail = async (
     to: string,
     name: string
 ): Promise<void> => {
-    const subject = "Welcome to Node Auth App";
+    const subject = "Welcome to NovaTech App";
 
-    const html = `<p>Hi ${name}, welcome to Node Auth App!</p>`;
+    const html = `<p>Hi ${name}, welcome to NovaTech App!</p>`;
 
     await sendEmail(to, subject, html);
 };

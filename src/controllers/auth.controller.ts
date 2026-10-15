@@ -37,12 +37,18 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
+  const identifier = typeof email === "string" ? email.trim() : "";
 
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required" });
+  if (!identifier || !password) {
+    return res.status(400).json({ message: "Username/email and password are required" });
   }
 
-  const user = await User.findOne({ email }).select("+password");
+  const adminUsername = process.env.ADMIN_USERNAME?.trim();
+  const isAdminUsername = adminUsername && identifier.toLowerCase() === adminUsername.toLowerCase();
+  const lookup = isAdminUsername
+    ? { email: `${adminUsername.toLowerCase()}@admin.local` }
+    : { email: identifier };
+  const user = await User.findOne(lookup).select("+password");
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(401).json({ message: "Invalid email or password" });
   }
