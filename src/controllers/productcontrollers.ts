@@ -1,22 +1,5 @@
 import express from "express";
 import { productModel } from "../models/product";
-import cloudinary from "../config/cloudinary";
-import type { UploadApiResponse } from "cloudinary";
-
-function uploadImage(buffer: Buffer): Promise<UploadApiResponse> {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { folder: "novatech-products" },
-      (error: Error | undefined, result: import("cloudinary").UploadApiResponse | undefined) => {
-        if (error) return reject(error);
-        if (!result) return reject(new Error("Image upload failed"));
-        resolve(result);
-      }
-    );
-
-    stream.end(buffer);
-  });
-}
 
 export const getAllProducts = async (
   req: express.Request,
@@ -25,7 +8,8 @@ export const getAllProducts = async (
   try {
     const products = await productModel.find();
     return res.status(200).json({ message: "Products retrieved", products });
-  } catch {
+  } catch (error) {
+    console.error("Fetch products error:", error);
     return res.status(500).json({ message: "Error fetching products" });
   }
 };
@@ -35,17 +19,10 @@ export const createProduct = async (
   res: express.Response
 ) => {
   try {
-    const { name, description, price, category } = req.body;
+    const { name, description, price, category, image } = req.body;
 
     if (!name || !description || price === undefined || !category) {
       return res.status(400).json({ message: "All product fields are required" });
-    }
-
-    let image = "";
-
-    if (req.file) {
-      const uploaded = await uploadImage(req.file.buffer);
-      image = uploaded.secure_url;
     }
 
     const product = await productModel.create({
@@ -53,7 +30,7 @@ export const createProduct = async (
       description,
       price: Number(price),
       category,
-      image
+      image: typeof image === "string" ? image.trim() : ""
     });
 
     return res.status(201).json({
@@ -72,7 +49,7 @@ export const updateProduct = async (
 ) => {
   try {
     const { id } = req.params;
-    const { name, description, price, category } = req.body;
+    const { name, description, price, category, image } = req.body;
 
     const updates: Record<string, unknown> = {};
 
@@ -80,11 +57,7 @@ export const updateProduct = async (
     if (description !== undefined) updates.description = description;
     if (price !== undefined) updates.price = Number(price);
     if (category !== undefined) updates.category = category;
-
-    if (req.file) {
-      const uploaded = await uploadImage(req.file.buffer);
-      updates.image = uploaded.secure_url;
-    }
+    if (image !== undefined) updates.image = typeof image === "string" ? image.trim() : "";
 
     const product = await productModel.findByIdAndUpdate(
       id,
