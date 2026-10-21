@@ -1,4 +1,5 @@
 import { mailConfig } from "../config/mail";
+import { welcomeEmailTemplate } from "../templates/welcome.template";
 
 const sendEmail = async (
     to: string,
@@ -62,9 +63,8 @@ export const sendWelcomeEmail = async (
     to: string,
     name: string
 ): Promise<void> => {
-    const subject = "Welcome to NovaTech App";
-
-    const html = `<p>Hi ${name}, welcome to NovaTech App!</p>`;
+    const subject = "Welcome to NOVA-TEACH App";
+    const html = welcomeEmailTemplate(name);
 
     await sendEmail(to, subject, html);
 };
