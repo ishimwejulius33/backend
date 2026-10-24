@@ -15,6 +15,12 @@ export const register = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Name, email and password are required" });
   }
 
+  if (typeof password !== "string" || password.length < 5) {
+  return res.status(400).json({
+    message: "Password must be at least 5 characters"
+  });
+}
+
   const exists = await User.findOne({ email });
   if (exists) {
     return res.status(409).json({ message: "Email already in use" });
@@ -100,6 +106,12 @@ export const resetPassword = async (req: Request, res: Response) => {
   if (!email || !code || !newPassword) {
     return res.status(400).json({ message: "Email, code and newPassword are required" });
   }
+
+  if (typeof newPassword !== "string" || newPassword.length < 5) {
+  return res.status(400).json({
+    message: "Password must be at least 5 characters"
+  });
+}
 
   const user = await User.findOne({
     email,
