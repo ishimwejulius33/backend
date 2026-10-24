@@ -1,7 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth.routes";
-import userRoutes from "./routes/user.routes";
 import prod from "./routes/product.route"
 
 const app = express();
@@ -16,7 +15,6 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
 app.use("/api/products", prod);
 
 app.use((req: Request, res: Response) => {

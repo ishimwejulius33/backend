@@ -130,3 +130,11 @@ export const resetPassword = async (req: Request, res: Response) => {
 
   res.json({ message: "Password reset successful, you can now log in" });
 };
+
+export const getUsers = async (_req: Request, res: Response) => {
+  const users = await User.find()
+    .select("name email role createdAt")
+    .sort({ createdAt: -1 });
+
+  res.json({ users });
+};
