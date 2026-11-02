@@ -4,7 +4,11 @@ import authRoutes from "./routes/auth.routes";
 import prod from "./routes/product.route"
 
 const app = express();
-const allowedOrigins = ["http://localhost:5173", process.env.FRONTEND_URL]
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://frontend-xpcq.onrender.com",
+  process.env.FRONTEND_URL,
+]
   .filter((origin): origin is string => Boolean(origin));
 
 app.use(cors({ origin: allowedOrigins }));
